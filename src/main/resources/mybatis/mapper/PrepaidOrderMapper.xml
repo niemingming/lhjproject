@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mall.order.payment.mapperPrepaidOrderMapper">
+
+<insert id="savePropertyPayment"  parameterType="map">
+insert into property_payment(pk_bill,bill_no,area_name,area_code,user_code,room_code,
+                             begin_date,end_date,total_money,order_status,order_time,
+                             bill_date,bill_type,status_code,status_name,created_time,
+                             server_time)
+       values (#{pkBill},#{billNo},#{areaName},#{areaCode},#{userCode},#{roomCode}
+                #{beginDate},#{endDate},#{totalMoney},#{orderStatus},#{orderTime},
+                #{billDate},"1",#{statusCode},#{statusName},#{createdTime},
+                now())
+
+</insert>
+
+<insert id="savePropertyPaymentOption" parameterType="map">
+insert into property_payment_option(
+    pk_charge_item,charge_item,fee_type,n_price,advance_money,discount_money,
+    discount,charge_money,nc_pk_std,nc_pk_discount,discount_name,nc_pk_payment
+) values(
+         #{pkChargeItem},#{chargeItem},#{feeType},#{nPrice},#{advanceMoney},#{discountMoney},
+         #{discount},#{chargeMoney},#{ncPkStd},#{ncPkDiscount},#{discountName},#{ncPkPayment}
+                                            )
+</insert>
+
+</mapper>
