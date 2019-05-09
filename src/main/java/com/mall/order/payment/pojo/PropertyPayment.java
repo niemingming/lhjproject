@@ -1,5 +1,9 @@
 package com.mall.order.payment.pojo;
-
+/*************************************************************
+ * 类：订单信息表
+ * @author Lihj
+ *************************************************************
+ */
 import java.util.Date;
 
 public class PropertyPayment {
@@ -11,14 +15,14 @@ public class PropertyPayment {
     public String roomCode;
     public Date beginDate;
     public Date endDate;
-    public float totalMoney;
+    public Double totalMoney;
     public char orderStatus;
     public char orderTime;
     public Date billDate;
     public char billType;
     public String statusCode;
     public String statusName;
-    public Date cteatedTime;
+    public Date createdTime;
     public Date serverTime;
 
     public String getPkBill() {
@@ -85,11 +89,11 @@ public class PropertyPayment {
         this.endDate = endDate;
     }
 
-    public float getTotalMoney() {
+    public Double getTotalMoney() {
         return totalMoney;
     }
 
-    public void setTotalMoney(float totalMoney) {
+    public void setTotalMoney(Double totalMoney) {
         this.totalMoney = totalMoney;
     }
 
@@ -141,12 +145,12 @@ public class PropertyPayment {
         this.statusName = statusName;
     }
 
-    public Date getCteatedTime() {
-        return cteatedTime;
+    public Date getCreatedTime() {
+        return createdTime;
     }
 
-    public void setCteatedTime(Date cteatedTime) {
-        this.cteatedTime = cteatedTime;
+    public void setCreatedTime(Date createdTime) {
+        this.createdTime = createdTime;
     }
 
     public Date getServerTime() {
@@ -156,4 +160,5 @@ public class PropertyPayment {
     public void setServerTime(Date serverTime) {
         this.serverTime = serverTime;
     }
+
 }

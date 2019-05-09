@@ -6,38 +6,38 @@ package com.mall.order.payment.pojo;
  */
 public class BaseResp
 {
-    private Integer code;
-    private String message;
+    private String resultCode;
+    private String msg;
     private Object data;
 
     public void BaseResp(){
 
     }
 
-    public BaseResp(Integer code,String message,Object data){
-        this.code = code;
-        this.message = message;
+    public BaseResp(String resultCode,String msg,Object data){
+        this.resultCode = resultCode;
+        this.msg = msg;
         this.data = data;
     }
 
-    public Integer getCode()
+    public String getCode()
     {
-        return code;
+        return resultCode;
     }
 
-    public void setCode(Integer code)
+    public void setCode(String code)
     {
-        this.code = code;
+        this.resultCode = resultCode;
     }
 
     public String getMessage()
     {
-        return message;
+        return msg;
     }
 
-    public void setMessage(String message)
+    public void setMessage(String msg)
     {
-        this.message = message;
+        this.msg = msg;
     }
 
     public Object getData()

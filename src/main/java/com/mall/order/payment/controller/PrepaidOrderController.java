@@ -1,19 +1,17 @@
 package com.mall.order.payment.controller;
+/**
+ * @author Lihaj
+ */
 
 import com.mall.order.payment.pojo.BaseResp;
 import com.mall.order.payment.pojo.PropertyPayment;
-import com.mall.order.payment.pojo.PropertyPaymentOption;
 import com.mall.order.payment.sercice.impl.PrepaidOrderServiceImpl;
 import net.minidev.json.JSONObject;
-import org.junit.Ignore;
+import net.minidev.json.JSONValue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -23,87 +21,74 @@ public class PrepaidOrderController {
     @Autowired
     private PrepaidOrderServiceImpl prepaidOrderServiceImpl;
 
-
-    @RequestMapping(value = "/createOrder/{data}",method = RequestMethod.POST)
-
-    public BaseResp CreatePrepaidOrder(@RequestBody JSONObject data ) throws ParseException {
-        String userCode = (String) data.get("userCode");
-        String roomCode = (String) data.get("roomCode");
-        String strDate = (String) data.get("srDate");
-        String endDate = (String) data.get("endDate");
-        String totalMoney = (String) data.get("totalMoney");
-        List<JSONObject> listJson = new ArrayList<JSONObject>();
-        listJson = (List<JSONObject>) data.get("billDatailList");
-
-        //保存订单信息
-        PropertyPayment p = new PropertyPayment();
-        String pkBill = getPk();
-        p.setPkBill(pkBill);
-        p.setUserCode(userCode);
-        p.setRoomCode(roomCode);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        p.setBeginDate(sdf.parse(strDate));
-        p.setEndDate(sdf.parse(endDate));
-        p.setTotalMoney(Float.parseFloat(totalMoney));
-        Date now = new Date();
-        System.out.println("------当前时间:"+now);
-        p.setCteatedTime(now);
-        prepaidOrderServiceImpl.savePropertyPayment(p);
-
-        //保存收费项目信息
-        for(int i = 0;i<listJson.size(); i++ ){
-            PropertyPaymentOption ppo = new PropertyPaymentOption();
-            String ppoPk = getPk();
-            ppo.setPkChargeItem(ppoPk);
-            JSONObject ppoJson = listJson.get(i);
-            ppo.setChargeItem(ppoJson.getAsString("chargeItem"));
-            ppo.setFeeType(ppoJson.getAsString("feeType"));
-            ppo.setnPrice(ppoJson.getAsString("nPrice"));
-            ppo.setAdvanceMoney(ppoJson.getAsString("advanceMoney"));
-            ppo.setDiscountMoney(ppoJson.getAsString("dicountMoney"));
-            ppo.setDicount(ppoJson.getAsString("dicount"));
-            ppo.setChargeMoney(ppoJson.getAsString("chargeMoney"));
-            ppo.setNcPkStd(ppoJson.getAsString("ncPkStd"));
-            ppo.setNvPkDiscount(ppoJson.getAsString("ncPkDiscount"));
-            ppo.setDiscountName(ppoJson.getAsString("discountName"));
-            prepaidOrderServiceImpl.savePropertyPaymentOption(ppo);
-        }
-        return  new BaseResp(200,"请求成功",null);
-    }
-
-    @Ignore
-    @GetMapping("/getOrder")
-    public BaseResp getPrepaidOrder(String userCode,String orderStatus,String orderTime){
-
-
-        return  new BaseResp(200,"请求成功",null);
-    }
-
     /**
-     * 按照规则生成订单表主键
-     * @return 主键
+     * 生成预缴费订单信息，包括订单记录和收费项目记录
+     * @param data
+     * @return BaseResp
      * @author Lihj
      */
-    @Ignore
-    public String getPk(){
-        Calendar now = Calendar.getInstance();
-        int year = now.get(Calendar.YEAR);
-        int month = now.get(Calendar.MONTH) + 1;
-        int day = now.get(Calendar.DAY_OF_MONTH);
-        int hour = now.get(Calendar.HOUR_OF_DAY);
-        int minute = now.get(Calendar.MINUTE);
-        int second = now.get(Calendar.SECOND);
-        StringBuffer sBuffer = new StringBuffer();
-        sBuffer.append(year);
-        sBuffer.append(month);
-        sBuffer.append(day);
-        sBuffer.append(hour);
-        sBuffer.append(minute);
-        sBuffer.append(second);
-        int i = (int)(Math.random()*900 + 100);
-        sBuffer.append(i);
-        sBuffer.append("A1");
-        System.out.print(sBuffer);
-        return sBuffer.toString();
+    @PostMapping(value = "/createOrder")
+    public BaseResp CreatePrepaidOrder(@RequestParam String data)  {
+        String resultCode = "200";
+        String msg = "请求成功";
+        String pkBill = "";
+        JSONObject jsonObject = (JSONObject) JSONValue.parse(data);
+        String userCode = (String) jsonObject.get("userCode");
+        String roomCode = (String) jsonObject.get("roomCode");
+        try{
+            //校验
+            Integer ordersByUser = prepaidOrderServiceImpl.getCheckUnpaidOrderUser(userCode);
+            if (ordersByUser>0){
+                resultCode = "500";
+                msg = "请求失败";
+            }else {
+                Integer ordersByRomm = prepaidOrderServiceImpl.getCheckUnpaidOrderRoom(roomCode);
+                if(ordersByRomm>0){
+                    resultCode = "500";
+                    msg = "请求失败";
+                }else {
+                    List<Double> moneyList = new ArrayList<Double>();
+                    Double totalMoney = Double.parseDouble(jsonObject.get("totalMoney").toString()) ;
+                    moneyList.add(totalMoney);
+                    List<JSONObject> listJson = (List<JSONObject>) jsonObject.get("billDatailList");
+                    for (int i=0;i<listJson.size();i++){
+                        Double money = Double.parseDouble(listJson.get(i).get("chargeMoney").toString()) ;
+                        moneyList.add(money);
+                    }
+                    Integer result = prepaidOrderServiceImpl.getCheckTotalMoney(moneyList);
+                    if (result == 0) {
+                        resultCode = "500";
+                        msg = "请求失败";
+                    }else {
+                        BaseResp baseResp = prepaidOrderServiceImpl.addPrepaidOrder(jsonObject);
+                        resultCode = baseResp.getCode();
+                        msg = baseResp.getMessage();
+                    }
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            resultCode = "500";
+            msg = "请求失败";
+        }
+        return new BaseResp(resultCode,msg,null);
     }
+
+    @GetMapping(value = "/getOrder")
+    //传路径参数用@PathVariable，传表单参数用@RequestParam
+    public BaseResp getPrepaidOrder( String userCode, String orderStatus, String orderTime ){
+        String resultCode = "200";
+        String msg = "请求成功";
+        List<PropertyPayment> propertyPayments = new ArrayList<PropertyPayment>();
+        try{
+            propertyPayments = prepaidOrderServiceImpl.getPrepaidOrder(userCode,orderStatus,orderTime);
+        }catch (Exception e){
+            e.printStackTrace();;
+            resultCode = "500";
+            msg="请求失败";
+        }
+        return  new BaseResp(resultCode,msg,propertyPayments);
+    }
+
+
 }

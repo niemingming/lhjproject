@@ -1,5 +1,9 @@
 package com.mall.order.payment.pojo;
-
+/*************************************************************
+ * 类：收费项目信息表
+ * @author Lihj
+ *************************************************************
+ */
 public class PropertyPaymentOption {
 
     public String pkChargeItem;
@@ -8,12 +12,12 @@ public class PropertyPaymentOption {
     public String nPrice;
     public String advanceMoney;
     public String discountMoney;
-    public String dicount;
+    public String discount;
     public String chargeMoney;
     public String ncPkStd;
-    public String nvPkDiscount;
+    public String ncPkDiscount;
     public String discountName;
-    public String ncPkPaymeng;
+    public String ncPkPayment;
 
     public String getPkChargeItem() {
         return pkChargeItem;
@@ -63,12 +67,12 @@ public class PropertyPaymentOption {
         this.discountMoney = discountMoney;
     }
 
-    public String getDicount() {
-        return dicount;
+    public String getDiscount() {
+        return discount;
     }
 
-    public void setDicount(String dicount) {
-        this.dicount = dicount;
+    public void setDiscount(String discount) {
+        this.discount = discount;
     }
 
     public String getChargeMoney() {
@@ -87,14 +91,6 @@ public class PropertyPaymentOption {
         this.ncPkStd = ncPkStd;
     }
 
-    public String getNvPkDiscount() {
-        return nvPkDiscount;
-    }
-
-    public void setNvPkDiscount(String nvPkDiscount) {
-        this.nvPkDiscount = nvPkDiscount;
-    }
-
     public String getDiscountName() {
         return discountName;
     }
@@ -103,11 +99,19 @@ public class PropertyPaymentOption {
         this.discountName = discountName;
     }
 
-    public String getNcPkPaymeng() {
-        return ncPkPaymeng;
+    public String getNcPkPayment() {
+        return ncPkPayment;
     }
 
-    public void setNcPkPaymeng(String ncPkPaymeng) {
-        this.ncPkPaymeng = ncPkPaymeng;
+    public void setNcPkPayment(String ncPkPayment) {
+        this.ncPkPayment = ncPkPayment;
+    }
+
+    public String getNcPkDiscount() {
+        return ncPkDiscount;
+    }
+
+    public void setNcPkDiscount(String ncPkDiscount) {
+        this.ncPkDiscount = ncPkDiscount;
     }
 }
